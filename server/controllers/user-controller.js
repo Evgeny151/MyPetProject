@@ -15,7 +15,7 @@ class UserController {
 
             return res.json(userData)
         } catch (e) {
-            console.log('Registration error', e)
+            next(e)
         }
     }
 
@@ -23,7 +23,7 @@ class UserController {
         try {
             
         } catch (error) {
-            
+            next(e)
         }
     }
 
@@ -31,7 +31,7 @@ class UserController {
         try {
             
         } catch (error) {
-            
+            next(e)
         }
     }
 
@@ -39,7 +39,7 @@ class UserController {
         try {
             
         } catch (error) {
-            
+            next(e)
         }
     }
 
@@ -47,7 +47,7 @@ class UserController {
         try {
             res.json(['123', '312312'])
         } catch (error) {
-            
+            next(e)
         }
     }
 
@@ -55,7 +55,7 @@ class UserController {
         try {
             res.json(['123', '312312'])
         } catch (error) {
-            
+            next(e)
         }
     }
 }
