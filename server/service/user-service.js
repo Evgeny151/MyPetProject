@@ -29,7 +29,7 @@ class UserService {
 
         const userDto = new UserDto(user)
 
-        const tokens = TokenService.generateToken({ ...userDto })
+        const tokens = TokenService.generateTokens({ ...userDto })
         await TokenService.saveToken(userDto.id, tokens.refreshToken)
 
         return {
@@ -47,6 +47,29 @@ class UserService {
 
         user.isActivated = true
         await user.save()
+    }
+
+    async login(email, password) {
+        const user = await UserModel.findOne({ email })
+
+        if (!user) {
+            throw ApiError.BadRequest('Пользователь с таким email не найдет')
+        }
+
+        const isPassEquals = await bcrypt.compare(password, user.password)
+        if (!isPassEquals) {
+            throw ApiError.BadRequest('Неверный пароль')
+        }
+
+        const userDto = new UserDto(user)
+        const tokens = TokenService.generateTokens({ ...userDto })
+
+        await TokenService.saveToken(userDto.id, tokens.refreshToken)
+
+        return {
+            ...tokens,
+            user: userDto
+        }
     }
 }
 

@@ -16,6 +16,7 @@ class UserController {
             const { email, password } = req.body
             const userData = await userService.registration(email, password)
 
+            // TODO вынести в константу
             const maxAge = 30 * 24 * 60 * 60 * 1000
 
             res.cookie('refreshToken', userData.refreshToken, {
@@ -31,9 +32,20 @@ class UserController {
 
     async login(req, res, next) {
         try {
-            
+            const { email, password } = req.body
+            const userData = await userService.login(email, password)
+
+            // TODO вынести в константу
+            const maxAge = 30 * 24 * 60 * 60 * 1000
+
+            res.cookie('refreshToken', userData.refreshToken, {
+                maxAge,
+                httpOnly: true
+            })
+
+            return res.json(userData)
         } catch (error) {
-            next(e)
+            next(error)
         }
     }
 
