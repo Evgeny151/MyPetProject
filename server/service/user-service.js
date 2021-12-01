@@ -5,7 +5,8 @@ const UserModel = require('../models/user-model');
 const MailService = require('../service/mail-service')
 const TokenService = require('../service/token-service')
 const UserDto = require('../dtos/user-dto')
-const ApiError = require('../exceptions/api-error')
+const ApiError = require('../exceptions/api-error');
+const tokenService = require('../service/token-service');
 
 class UserService {
     async registration(email, password) {
@@ -29,8 +30,8 @@ class UserService {
 
         const userDto = new UserDto(user)
 
-        const tokens = TokenService.generateTokens({ ...userDto })
-        await TokenService.saveToken(userDto.id, tokens.refreshToken)
+        const tokens = tokenService.generateTokens({ ...userDto })
+        await tokenService.saveToken(userDto.id, tokens.refreshToken)
 
         return {
             ...tokens,
@@ -62,9 +63,9 @@ class UserService {
         }
 
         const userDto = new UserDto(user)
-        const tokens = TokenService.generateTokens({ ...userDto })
+        const tokens = tokenService.generateTokens({ ...userDto })
 
-        await TokenService.saveToken(userDto.id, tokens.refreshToken)
+        await tokenService.saveToken(userDto.id, tokens.refreshToken)
 
         return {
             ...tokens,
@@ -73,8 +74,33 @@ class UserService {
     }
 
     async logout(refreshToken) {
-        const token = await TokenService.removeToken(refreshToken)
+        const token = await tokenService.removeToken(refreshToken)
         return token
+    }
+
+    async refresh(refreshToken) {
+        if (!refreshToken) {
+            throw ApiError.UnauthorizedError()
+        }
+
+        const userData = tokenService.validateRefreshToken(refreshToken)
+        const tokenFromDb = await tokenService.findToken(refreshToken)
+
+        if (!userData || !tokenFromDb) {
+            throw ApiError.UnauthorizedError()
+        }
+
+        const user = await UserModel.findId(userData.id)
+        const userDto = new UserDto(user)
+        const tokens = tokenService.generateTokens({ ...userDto })
+
+        await tokenService.saveToken(userDto.id, tokens.refreshToken)
+
+        return {
+            ...tokens,
+            user: userDto
+        }
+
     }
 }
 
