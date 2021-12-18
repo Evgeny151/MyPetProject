@@ -1,20 +1,19 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig } from 'axios';
 
-export const API_URL = `http://localhost:5000/api`
+export const API_URL = 'http://localhost:5000/api';
 
-const $api = axios.create({
-    withCredentials: true,
-    baseURL: API_URL,
+export const $api = axios.create({
+  withCredentials: true,
+  baseURL: API_URL
 })
 
 $api.interceptors.request.use((config: AxiosRequestConfig) => {
-    console.log('axios config', config)
+  console.log('axios config', config)
 
-    if(config.headers) {
-        config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`
-    }
+  if (config.headers) {
+    // eslint-disable-next-line no-param-reassign
+    config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`
+  }
 
-    return config
+  return config
 })
-
-export default $api
