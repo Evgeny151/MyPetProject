@@ -6,7 +6,6 @@ const MailService = require('../service/mail-service')
 const TokenService = require('../service/token-service')
 const UserDto = require('../dtos/user-dto')
 const ApiError = require('../exceptions/api-error');
-const tokenService = require('../service/token-service');
 
 class UserService {
     async registration(email, password) {
@@ -26,12 +25,14 @@ class UserService {
             activationLink: activationLinkHash
         })
 
-        await MailService.sendActivationMail(email, activationUrl)
+        // await MailService.sendActivationMail(email, activationUrl) // TODO: доделать активацию по почте
 
         const userDto = new UserDto(user)
 
-        const tokens = tokenService.generateTokens({ ...userDto })
-        await tokenService.saveToken(userDto.id, tokens.refreshToken)
+        const tokens = TokenService.generateTokens({ ...userDto })
+        console.log('User-service tokens', tokens);
+
+        await TokenService.saveToken(userDto.id, tokens.refreshToken)
 
         return {
             ...tokens,
@@ -63,9 +64,9 @@ class UserService {
         }
 
         const userDto = new UserDto(user)
-        const tokens = tokenService.generateTokens({ ...userDto })
+        const tokens = TokenService.generateTokens({ ...userDto })
 
-        await tokenService.saveToken(userDto.id, tokens.refreshToken)
+        await TokenService.saveToken(userDto.id, tokens.refreshToken)
 
         return {
             ...tokens,
@@ -74,7 +75,7 @@ class UserService {
     }
 
     async logout(refreshToken) {
-        const token = await tokenService.removeToken(refreshToken)
+        const token = await TokenService.removeToken(refreshToken)
         return token
     }
 
@@ -83,24 +84,28 @@ class UserService {
             throw ApiError.UnauthorizedError()
         }
 
-        const userData = tokenService.validateRefreshToken(refreshToken)
-        const tokenFromDb = await tokenService.findToken(refreshToken)
+        const userData = TokenService.validateRefreshToken(refreshToken)
+        const tokenFromDb = await TokenService.findToken(refreshToken)
 
         if (!userData || !tokenFromDb) {
             throw ApiError.UnauthorizedError()
         }
 
-        const user = await UserModel.findId(userData.id)
+        const user = await UserModel.findById(userData.id)
         const userDto = new UserDto(user)
-        const tokens = tokenService.generateTokens({ ...userDto })
+        const tokens = TokenService.generateTokens({ ...userDto })
 
-        await tokenService.saveToken(userDto.id, tokens.refreshToken)
+        await TokenService.saveToken(userDto.id, tokens.refreshToken)
 
         return {
             ...tokens,
             user: userDto
         }
+    }
 
+    async getAllUsers() {
+        const users = await UserModel.find()
+        return users
     }
 }
 
