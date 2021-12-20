@@ -1,5 +1,9 @@
-export const App = () => (
-  <div className='App'>
-    1231231
-  </div>
+import { FC } from 'react'
+import { LoginForm } from './components/LoginForm'
+
+export const App: FC = () => (
+	<div className='App'>
+		<LoginForm />
+    fd
+	</div>
 )

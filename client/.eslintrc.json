@@ -4,9 +4,9 @@
         "es2021": true
     },
     "extends": [
+        "eslint:recommended",
         "plugin:react/recommended",
-        "airbnb",
-        "plugin:import/recommended"
+        "plugin:@typescript-eslint/recommended"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -18,50 +18,25 @@
     },
     "plugins": [
         "react",
-        "@typescript-eslint",
-        "import"
+        "@typescript-eslint"
     ],
     "rules": {
-        "semi": 0,
-        "comma-dangle": ["error", "never"],
-        "react/jsx-filename-extension": [ "warn", {"extensions": [".tsx"]} ],
         "react/react-in-jsx-scope": "off",
-        "react/function-component-definition": [
-            2,
-            {
-              "namedComponents": "arrow-function"
-            }
-          ],
-        "import/extensions": [ 
-            "error", 
-            "ignorePackages", 
-            {
-                "ts": "never", 
-                "tsx": "never" 
-            }
+        "indent": [
+            "error",
+            "tab"
         ],
-        "import/prefer-default-export": "off",
-        "indent": ["error", 2],
-        "react/jsx-indent": ["error", 2],
-        "react/jsx-indent-props": ["error", 2],
-        "jsx-quotes": ["error", "prefer-single"],
-        "react/button-has-type": "off",
-        "arrow-parens": ["error", "as-needed"]
-    },
-    "settings": { 
-        "import/resolver": {
-            "node": {
-              "moduleDirectory": [
-                "src",
-                "node_modules"
-              ],
-              "extensions": [
-                ".js",
-                ".jsx",
-                ".ts",
-                ".tsx"
-              ]
-            }
-        }
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "never"
+        ]
     }
 }
